@@ -55,6 +55,75 @@ public class Expedicion {
         return cimasLogradas;
     }
 
+    /**
+     * Agrega un expedicionario a la lista de participantes
+     * @param expedicionario clase Expedicionario hay que crearlo.
+     */
+    public void agregarParticipante (Expedicionario expedicionario) {
+        if (!participantes.contains(expedicionario)) {
+            participantes.add(expedicionario);
+        }
+    }
+
+    /**
+     * Elimina un expedicionario de la lista de participantes.
+     * @param dni dni por el que se busca al participante a eliminar.
+     * @return true o false si se elimina un elemento.
+     */
+    public boolean eliminarParticipante (String dni) {
+        return participantes.removeIf(e -> e.getDni().equals(dni));
+    }
+
+// ------------------------------------------ MODICIAR NO ME CONVENCE -------------------------------
+
+    /**
+     * Registra un alpinista que logró alcanzar la cima.
+      * @param alpinista Clase alpinista hay que crearlo.
+     */
+    public void registrarCima (Alpinista alpinista) {
+        if (participantes.contains(alpinista) && !cimasLogradas.contains(alpinista)) {
+            cimasLogradas.add(alpinista);
+        }
+    }
+// -----------------------------------------------------------------------
+
+    /**
+     * Verificación de la expedición tiene al menos un médico.
+     * @return verdadero o falso si la lista de participantes tiene al menos un medico en ella.
+     */
+    public boolean tieneMedico() {
+        for (Expedicionario exp: participantes) {
+            if (exp instanceof Medico) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Consulta de las expediciones en las que participo un determinado expedicionario por su dni.
+     * @param dni metodo de identificación de un expedicionario.
+     * @return lista de expediciones realizadas por el expedicionario.
+     */
+    public List<Expedicion> consultarExpediciones (String dni) {
+        List<Expedicion> expediciones = new ArrayList<>();
+
+        for (Expedicionario exp : participantes) {
+            if(exp.getDni().equals(dni)) {
+                expediciones.add(this);
+                break;
+            }
+        }
+        return expediciones;
+    }
+
+    /**
+     *  Lista de todos los alpinistas que tienen cimas logradas
+     * @return lista de cimas logradas por todos los alpinistas.
+     */
+    public List<Alpinista> getAlpinistasConCima () {
+        return new ArrayList<>(cimasLogradas);
+    }
 
     @Override
     public String toString() {
