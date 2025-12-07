@@ -3,77 +3,70 @@ import java.util.List;
 
 public class Catalogo {
 
-    private int id;
+    private final int id; // Se puede usar en un futuro de cara a montañas peligrosas, montañas faciles, montañas de cursos...
     private List<Montaña> montañasDisponibles;
 
     public Catalogo(int id) {
-        this.id = id;
+        this.id = id; // ID único (inmutable)
         this.montañasDisponibles = new ArrayList<>();
     }
 
-    // --- Metodos de acceso getters ---
     public int getId() {
         return id;
     }
 
-    public List<Montaña> getMonstañasDisponibles() {
-        return montañasDisponibles;
-    }
-// ----------------------------------------------------- MODIFICAR -------------------------
-    /**
-     * Agrega una montaña al catalogo.
-     * @param montaña Clase montaña que la crea y la añade al catalogo.
-     */
-    public void agregarAlCatalogo(Montaña montaña) {
-        if (montaña != null && !montañasDisponibles.add(montaña)) {
-            montañasDisponibles.add(montaña);
-        }
-    }
-// ------------------------------------------------------------------------
-
-    /**
-     * Quita una montaña del catalogo mediante la identificación de su id.
-     * @param id parametro que identifica la montaña.
-     * @return true o false si se elimina un elemento de la lista.
-     */
-    public boolean quitarDelCatalogo (int id) {
-        return montañasDisponibles.removeIf(m -> m.getId() == id);
-    }
-
-    /**
-     * Sacamaos una lista de todas las montañas disponibles.
-     * @return lista de todas las montañas disponibles en el catalogo.
-     */
-    public List<Montaña> listarDisponibles() {
+    public List<Montaña> getMontañasDisponibles() {
         return new ArrayList<>(montañasDisponibles);
     }
 
     /**
-     * Comprobamos si una montaña está disponible en el catálogo por su id.
-     * @param id atributo que identifica a la montaña.
-     * @return true o false si la montaña esta disponible.
+     * Añade una montaña al catalogo si no esta previemante
+     * @param montaña la montaña que queremos añadir
+     * @return true si se añade o false si es null o ya esta añadida antes.
      */
-    public boolean estaDisponible (int id) {
-        for (Montaña montaña : montañasDisponibles) {
-            if(montaña.getId() == id) {
-                return true;
+    public boolean agregarMontañaCatalogo (Montaña montaña) {
+        if (montaña == null) return false;
+
+        for (Montaña m : montañasDisponibles) {
+            if (m.getId() == montaña.getId()) {
+                return false;
             }
         }
-        return false;
+
+        montañasDisponibles.add(montaña);
+        return true;
     }
 
     /**
-     * Busca una montaña en el catalogo por su id.
-     * @param id parametro que identifica la montaña.
-     * @return null si no existe o la montaña que encuentra por su id.
+     * Quitamos la montaña del catalogo por ID
+     */
+    public boolean quitarMontañaCatalogo (int id) {
+        return montañasDisponibles.removeIf(m -> m.getId() == id);
+    }
+
+    /**
+     * Lista de montañas que hay en catálogo
+     */
+    public List<Montaña> listarMontañasDisponiblesEnCatalogo() {
+        return new ArrayList<>(montañasDisponibles);
+    }
+
+    /**
+     * Verifica si una montaña esta en el catalogo con este ID
+     */
+    public boolean estaDisponible (int id) {
+        return montañasDisponibles.stream()
+                .anyMatch(m -> m.getId() == id);
+    }
+
+    /**
+     * Busca una montaña por su ID devolviendo la instancia de montaña o null
      */
     public Montaña buscarMontaña (int id) {
-        for (Montaña montaña : montañasDisponibles) {
-            if (montaña.getId() == id) {
-                return montaña;
-            }
-        }
-        return null;
+        return montañasDisponibles.stream()
+                .filter(m -> m.getId() == id)
+                .findFirst()
+                .orElse(null);
     }
 
     @Override

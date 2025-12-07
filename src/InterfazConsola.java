@@ -127,7 +127,7 @@ public class InterfazConsola {
                 case 1: registrarMontaña();break;
                 case 2: buscarMontaña(); break;
                 case 3: actualizarMontaña(); break;
-                case 4: listarMonstañas(); break;
+                case 4: listarMontañas(); break;
                 case 0: volver = true; break;
                 default:
                     System.out.println(" Opción no válida");
@@ -152,9 +152,9 @@ public class InterfazConsola {
             int opcion = leerOpcion(0, 4);
 
             switch (opcion) {
-                case 1: break;
-                case 2: break;
-                case 3: break;
+                case 1: agregarMontañaCatalogo(); break;
+                case 2: quitarMontañaCatalogo(); break;
+                case 3: listarMontañasCatalogo(); break;
                 case 4: break;
                 case 0: volver = true; break;
                 default:
@@ -337,7 +337,7 @@ public class InterfazConsola {
      * Muestra todas las montañas registradas en el sistema.
      * Si no hay ninguna, informa al usuario.
      */
-    public void listarMonstañas (){
+    public void listarMontañas (){
         System.out.println("\n --- LISTADO DE TODAS LAS MONTAÑAS DISPONIBLES ---");
 
         List<Montaña> montañas = sistema.listarMontañas();
@@ -354,7 +354,74 @@ public class InterfazConsola {
 
 // --- GESTIÓN DE CATÁLOGO ---
 
+    /**
+     * Solicita ID de una montaña ya registrada y la añade al catálogo
+     * Si la montaña no existe o ya está en el catálogo, informa.
+     */
+    private void agregarMontañaCatalogo () {
+        System.out.println("\n --- AÑADIR MONTAÑA AL CATÁLOGO ---");
 
+        try {
+            System.out.println("ID de la montaña que desea añadir al catálogo: ");
+            int id = Integer.parseInt(scanner.nextLine());
+
+            boolean agregada = sistema.agregarMontañaAlCatalogo(id);
+
+            if (agregada) {
+                System.out.println("La montaña con ID " + id + " ha sido añadida correctamente al catálogo");
+            } else {
+                System.out.println("No se pudo agregar la montaña porque o bien no exista o bien esta añadida ya");
+            }
+            pausar();
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            pausar();
+        }
+    }
+
+    /**
+     * Solicita ID y elimina la montaña correspondiente del catálogo.
+     * Mensaje si no se encuentra presente.
+     */
+    private void quitarMontañaCatalogo () {
+        System.out.println("\n --- QUITAR MONTAÑA DEL CATÁLOGO ---");
+
+        try {
+            System.out.println("Id de la montaña que desea quitar del catálogo: ");
+            int id = Integer.parseInt(scanner.nextLine());
+
+            boolean eliminada = sistema.quitarMontañaCatalogo(id);
+
+            if (eliminada) {
+                System.out.println("La montaña con ID " + id + " ha sido eliminada del catálogo correctamente.");
+            } else {
+                System.out.println("No existe ninguna montaña con ese ID dentro del catálogo.");
+            }
+            pausar();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            pausar();
+        }
+    }
+
+    /**
+     * Lista todas las montañas disponibles dentro del catálogo.
+     * Mensaje si el catálogo se encuentra vacío.
+     */
+    private void listarMontañasCatalogo () {
+        System.out.println("\n --- MONTAÑAS INCLUIDAS EN EL CATÁLOGO ---");
+        List<Montaña> lista = sistema.listarCatalogo();
+
+        if (lista.isEmpty()) {
+            System.out.println("El catálogo no contiene ninguna montaña registrada.");
+        } else {
+            for (Montaña m : lista) {
+                System.out.println(" * " + m);
+            }
+        }
+        pausar();
+    }
 
 // --- MÉTODOS AUXILIARES ---
 

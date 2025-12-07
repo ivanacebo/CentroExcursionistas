@@ -15,7 +15,6 @@ public class SistemaCentroExcursionistasCarlemany {
     private Catalogo catalogo;
     private int contadorExpediciones;
     private int contadorMontañas;
-    private int contadorCatalogo;
 
     public SistemaCentroExcursionistasCarlemany() {
         this.expedicionarios = new HashMap<>();
@@ -24,7 +23,6 @@ public class SistemaCentroExcursionistasCarlemany {
         this.catalogo = new Catalogo(1);
         this.contadorExpediciones = 1;
         this.contadorMontañas = 1;
-        this.contadorCatalogo = 1;
     }
 
 
@@ -82,6 +80,34 @@ public class SistemaCentroExcursionistasCarlemany {
 
 // GESTIÓN DE CATALOGO
 
+    /**
+     * Agrega una montaña existente al catálogo.
+     */
+    public boolean agregarMontañaAlCatalogo (int idMontaña) {
+        Montaña montaña = montañas.get(idMontaña);
 
+        if (montaña == null) return false;
 
+        return catalogo.agregarMontañaCatalogo(montaña);
+    }
+
+    public boolean quitarMontañaCatalogo (int idMontaña) {
+        return catalogo.quitarMontañaCatalogo(idMontaña);
+    }
+
+    public List<Montaña> listarCatalogo() {
+        return catalogo.listarMontañasDisponiblesEnCatalogo();
+    }
+
+    public Montaña buscarEnCatalogo (int idMontaña) {
+        return catalogo.buscarMontaña(idMontaña);
+    }
+
+    public boolean estaEnCatalogo (int idMontaña) {
+        return catalogo.estaDisponible(idMontaña);
+    }
+
+    public Catalogo getCatalogo() {
+        return this.catalogo;
+    }
 }
