@@ -1,11 +1,8 @@
 /**
- * Clase que representa una montaña en el sistema del centro de excursionistas Carlemany
- *
- * Cada montaña se identifica de forma única por su id conteniendo información de nombre,
- * altura y localización.
+ * Representa una montaña registrada en el sistema.
  */
 public class Montaña {
-    private int id;
+    private final int id; // ID único (inmutable)
     private String nombre;
     private int altura;
     private String localizacion;
@@ -17,7 +14,6 @@ public class Montaña {
         this.localizacion = localizacion;
     }
 
-    // --- Metodos de acceso getters ---
     public int getId() {
         return id;
     }
@@ -34,7 +30,6 @@ public class Montaña {
         return localizacion;
     }
 
-    // --- Metodos de modificación setters ---
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }

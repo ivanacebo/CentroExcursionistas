@@ -1,14 +1,19 @@
 import java.sql.SQLOutput;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Interfaz de consola del sistema del Centro de Excursionistas Carlemany.
+ * Gestiona el flujo de menús, entrada del usuario y comunicación con el sistema.
+ */
 public class InterfazConsola {
 
-    // Contraseña de acceso y maximo de intentos para ella
+    // Autenticación
     private static final String PASSWORD = "carlemany2025";
     private static final int MAX_INTENTOS_LOGIN = 3;
 
-    // Formateador de fechas que define el patrón "día/mes/año" (por ejemplo: 25/12/2025).
+    // Formato de fechas
     private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private SistemaCentroExcursionistasCarlemany sistema;
@@ -22,9 +27,7 @@ public class InterfazConsola {
     }
 
     /**
-     * Inicia la aplicación, llama al metodo de bienvenida y pedir contraseña.
-     * Si la contraseña falla los tres intentos nos echaria del sistema.
-     * Si la contraseña es la adecuada nos deberia mostrar el primer menu que es el principal.
+     * Inicia la aplicación y gestiona el flujo inicial.
      */
     public void iniciar() {
         bienvenida();
@@ -38,10 +41,6 @@ public class InterfazConsola {
         scanner.close();
     }
 
-
-    /**
-     * Mensaje de bienvenida.
-     */
     public void bienvenida() {
         System.out.println("================================================================================");
         System.out.println("           SISTEMA DE GESTIÓN - CENTRO DE EXCURSIONISTAS CARLEMANY              ");
@@ -49,10 +48,7 @@ public class InterfazConsola {
     }
 
     /**
-     * Metodo de acceso al sistema donde solicita la contraseña para poder acceder al sistema.
-     * Tenemos 3 intentos maximo para poder acceder si fallamos los 3 intentos nos devuelve un false.
-     * Si acertamos la contraseña tenemos un true.
-     * @return true o false si la contraseña esta bien escrita y coincide con la que tenemos antes puesta "carlemany2025".
+     * Solicita la contraseña hasta alcanzar el máximo de intentos.
      */
     public boolean autenticar() {
         int intentos = 0;
@@ -76,19 +72,8 @@ public class InterfazConsola {
         return false;
     }
 
-/**
- * A PARTIR DE AQUI PROGRAMAMOS LA LOGICA PARA LOS DISTINTOS MENUS.
- * 1. MENU PRINCIPAL DE ACCESO.
- * 2. MENU DE GESTION DE MONTAÑAS
- * 3. MENU DE GESTION DE CATALOGOS
- * 4. MENU GESTION DE EXPEDICIONARIOS
- * 5. MENU GESTION DE EXPEDICIONES
- * 6. MENU DE CONSULTAS
- */
+// MENÚS
 
-    /**
-     * Muestra el menú principal y es el punto de acceso a los distintos menús
-     */
     public void mostrarMenuPrincipal() {
         boolean salir = false;
 
@@ -122,11 +107,6 @@ public class InterfazConsola {
         }
     }
 
-    /**
-     * Menu de gestión de montañas que accedemos desde el menu principal.
-     * Nos permite hacer ciertas cosas en este menu como registrar, buscar por ide actualizar datos listas montañas
-     * volveriamos al anterior menú una vez acabemos aquí
-     */
     private void menuGestionMontañas() {
         boolean volver = false;
 
@@ -144,10 +124,10 @@ public class InterfazConsola {
             int opcion = leerOpcion(0, 4);
 
             switch (opcion) {
-                case 1: break;
-                case 2: break;
-                case 3: break;
-                case 4: break;
+                case 1: registrarMontaña();break;
+                case 2: buscarMontaña(); break;
+                case 3: actualizarMontaña(); break;
+                case 4: listarMonstañas(); break;
                 case 0: volver = true; break;
                 default:
                     System.out.println(" Opción no válida");
@@ -155,11 +135,6 @@ public class InterfazConsola {
         }
     }
 
-    /**
-     * Menu de gestión de catalogo al cual accedemos desde el menú principal.
-     * Nos permite hacer ciertas funciones como añadir Montaña por id,  quitar montaña por id, listar todas las montañas disponibles dentro del catálogo, ver alpinistas que tengan cima en una montaña.
-     * Volveremos al menú principal una vez acabemos de usar este menú.
-     */
     public void menuGestionCatalogo() {
         boolean volver = false;
 
@@ -188,11 +163,6 @@ public class InterfazConsola {
         }
     }
 
-    /**
-     * Menú de gestión de Expedicionarios accesible a través del menú principal.
-     * Podremos registrar Alpinistas, Médicos, sacar una lista de todos los Expedicionarios disponibles y podremos consultar la ficha de uno de ellos por su id.
-     * Volveremos al menú principal una vez acabaemos de usar este menú.
-     */
     public void menuGestionExpedicionarios() {
         boolean volver = false;
 
@@ -221,11 +191,6 @@ public class InterfazConsola {
         }
     }
 
-    /**
-     * Menú de gestión de Expediciones accesible a través del menú principal
-     * Podremos realizar la creación de Expediciones, añadir participantes, registar si se alcanzo la cima o listar todas las expediciones.
-     * Volveremos al menú principal una vez se acabe de realizar todas las operaciones necesarias aquí
-     */
     public void menuGestionExpediciones() {
         boolean volver = false;
 
@@ -254,11 +219,6 @@ public class InterfazConsola {
         }
     }
 
-    /**
-     * Menú de consultas accesible a través del menú principal.
-     * Podremos consultar las expediciones realizadas por un expedicionario por su id, verificar si se alcanzo la cima, listar participantes de una expedición por su id.
-     * Volveremos al menú principal una vez acabemos de consultar los datos que necesitemos saber.
-     */
     public void menuConsultas() {
         boolean volver = false;
 
@@ -284,6 +244,119 @@ public class InterfazConsola {
             }
         }
     }
+
+// --- GESTIÓN DE MONTAÑAS ---
+
+    /**
+     * Solicita los datos al usuario y registra una nueva montaña en el sistema.
+     * Valida entradas básicas y captura errores de conversión numérica.
+     * la creación de la montaña se realiza en el sistema.
+     */
+    public void registrarMontaña() {
+        System.out.println("\n --- REGISTRAR NUEVA MONTAÑA ---");
+
+        try {
+            System.out.println("Nombre de la montaña: ");
+            String nombre = scanner.nextLine();
+            System.out.println("Altura (metros): ");
+            int altura = Integer.parseInt(scanner.nextLine());
+            System.out.println("Localización: ");
+            String localizacion = scanner.nextLine();
+
+            Montaña montaña = sistema.registrarMontaña(nombre, altura, localizacion);
+            System.out.println("Montaña registrada exitosamente con ID: " + montaña.getId());
+            System.out.println(montaña);
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            pausar();
+        }
+    }
+
+    /**
+     * Permite buscar una montaña por su ID. Muestra el resultado si existe.
+     * Si el ID no corresponde a ninguna montaña, informa al usuario.
+     */
+    public void buscarMontaña() {
+        System.out.println("\n --- BUSCAR MONTAÑA ---");
+
+        try {
+            System.out.println("ID de la montaña: ");
+            int id = Integer.parseInt(scanner.nextLine());
+            Montaña montaña = sistema.buscarMontaña(id);
+
+            if (montaña != null){
+                System.out.println("Montaña encontrada: ");
+                System.out.println(montaña);
+            } else {
+                System.out.println("No se encontro ninguna montaña con el ID: " + id);
+            }
+            pausar();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            pausar();
+        }
+    }
+
+    /**
+     * Actualiza una montaña existente buscando primero su ID.
+     * Si la montaña existe, solicita los nuevos valores y delega la actualización en el sistema.
+     * Si no existe, finaliza el proceso sin modificar nada.
+     */
+    public void actualizarMontaña() {
+        System.out.println("\n --- ACTUALIZAR MONTAÑA ---");
+
+        try {
+            System.out.println("ID de la montaña a actualizar");
+            int id = Integer.parseInt(scanner.nextLine());
+            Montaña montañaActual = sistema.buscarMontaña(id);
+
+            if (montañaActual == null) {
+                System.out.println("No se encontró ninguna montaña con el ID " + id);
+                pausar();
+                return;
+            }
+
+            System.out.println("Nombre de la montaña: ");
+            String nombre = scanner.nextLine();
+            System.out.println("Altura (metros): ");
+            int altura = Integer.parseInt(scanner.nextLine());
+            System.out.println("Localización: ");
+            String localizacion = scanner.nextLine();
+
+            sistema.actualizarMontaña(id, nombre, altura, localizacion);
+            System.out.println("Montaña actualizada con exito");
+            pausar();
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            pausar();
+        }
+    }
+
+    /**
+     * Muestra todas las montañas registradas en el sistema.
+     * Si no hay ninguna, informa al usuario.
+     */
+    public void listarMonstañas (){
+        System.out.println("\n --- LISTADO DE TODAS LAS MONTAÑAS DISPONIBLES ---");
+
+        List<Montaña> montañas = sistema.listarMontañas();
+
+        if (montañas.isEmpty()) {
+            System.out.println("No tenemos montañas registradas");
+        } else {
+            for (Montaña m : montañas) {
+                System.out.println(" * " + m);
+            }
+        }
+        pausar();
+    }
+
+// --- GESTIÓN DE CATÁLOGO ---
+
+
+
+// --- MÉTODOS AUXILIARES ---
 
     /**
      * Metodo para leer una opción dentro de un rango que estara permitido para los distintos menus
@@ -311,9 +384,6 @@ public class InterfazConsola {
 
     }
 
-    /**
-     * Metodo que utilizamos para pausar el programa en algún momento
-     */
     private void pausar () {
         System.out.println("\n Presione enter para continuar....");
         scanner.nextLine();
