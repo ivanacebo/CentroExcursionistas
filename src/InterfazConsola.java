@@ -1,4 +1,4 @@
-import java.sql.SQLOutput;
+import java.sql.SQLOutput; // esto lo podemos quitar no?
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
