@@ -14,7 +14,6 @@ public class Medico extends Expedicionario{
         this.especialidad = especialidad;
     }
 
-    // --- Metodos de acceso getters ---
     public String getLicencia() {
         return licencia;
     }
@@ -23,7 +22,6 @@ public class Medico extends Expedicionario{
         return especialidad;
     }
 
-    // --- Metodos de modificación setters ---
     public void setLicencia(String licencia) {
         this.licencia = licencia;
     }

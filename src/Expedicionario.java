@@ -20,7 +20,6 @@ public abstract class Expedicionario {
         this.rol = rol;
     }
 
-    // --- Metodos de acceso getters ---
     public String getDni() {
         return dni;
     }
@@ -41,7 +40,6 @@ public abstract class Expedicionario {
         return rol;
     }
 
-    // --- Metodos de modificación setters ---
     public void setDni(String dni) {
         this.dni = dni;
     }

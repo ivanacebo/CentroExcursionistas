@@ -13,7 +13,7 @@ public class SistemaCentroExcursionistasCarlemany {
 
     private Map<String, Expedicionario> expedicionarios;
     private Map<Integer, Montaña> montañas;
-    private List<Expedicion> historialExpediciones;
+    private Map<Integer, Expedicion> expediciones;
     private Catalogo catalogo;
     private int contadorExpediciones;
     private int contadorMontañas;
@@ -21,7 +21,7 @@ public class SistemaCentroExcursionistasCarlemany {
     public SistemaCentroExcursionistasCarlemany() {
         this.expedicionarios = new HashMap<>();
         this.montañas = new HashMap<>();
-        this.historialExpediciones = new ArrayList<>();
+        this.expediciones = new HashMap<>();
         this.catalogo = new Catalogo(1);
         this.contadorExpediciones = 1;
         this.contadorMontañas = 1;
@@ -179,6 +179,91 @@ public class SistemaCentroExcursionistasCarlemany {
             ((Medico) expedicionario).setEspecialidad(especialidad);
         }
     }
+
+// GESTIÓN DE EXPEDICIONES
+
+    /**
+     * Cramos una expedición para una montaña especifica dentro del catálogo si está disponible.
+     */
+    public Expedicion crearExpedicion (String nombre, LocalDate fechaInicio, LocalDate fechaFin, int idMontaña) {
+        Montaña montaña = montañas.get(idMontaña);
+
+        if (montaña != null && catalogo.estaDisponible(idMontaña)) {
+            int id = contadorExpediciones++;
+            Expedicion expedicion = new Expedicion(id, nombre, fechaInicio, fechaFin, montaña);
+            expediciones.put(id,expedicion);
+            return expedicion;
+        }
+        return null;
+    }
+
+    /**
+     * Añade un expedicionario a una expedición mediante el id de expedición y el dni de expedicionario.
+     */
+    public void inscribirExpedicionario(int idExpedicion, String dniExpedicionario) {
+        Expedicion expedicion = expediciones.get(idExpedicion);
+        Expedicionario expedicionario = expedicionarios.get(dniExpedicionario);
+
+        if (expedicion != null && expedicionario != null) {
+            expedicion.agregarParticipante(expedicionario);
+        }
+    }
+
+    /**
+     * Registra si un expedicionario llego a la cima en una expedición
+     * Tanto médicos como alpinistas pueden alcanzar la cima
+     */
+    public void registrarCima (int idExpedicion, String dniExpedicionario) {
+        Expedicion expedicion = expediciones.get(idExpedicion);
+        Expedicionario expedicionario = expedicionarios.get(dniExpedicionario);
+
+        if (expedicion !=null && expedicionario != null) {
+            expedicion.registrarCima((Expedicionario) expedicionario);
+        }
+    }
+
+    /**
+     * Consulta las expediciones en las que participa un expedicionario por su DNI
+     */
+    public List<Expedicion> listaExpedicionesDe (String dni) {
+        List<Expedicion> listasExpedicionesDe = new ArrayList<>();
+
+        for (Expedicion expedicion : expediciones.values()) {
+            for (Expedicionario expedicionario : expedicion.getParticipantes()) {
+                if (expedicionario.getDni().equals(dni)) {
+                    listasExpedicionesDe.add(expedicion);
+                    break;
+                }
+            }
+        }
+        return listasExpedicionesDe;
+    }
+
+    /**
+     * Consulta si se alcanzo la cima en una expedición por su ID
+     */
+    public boolean consultarCimaExpedicion (int idExpedicion) {
+        Expedicion expedicion = expediciones.get(idExpedicion);
+
+        return expedicion != null && expedicion.getCimasLogradas().isEmpty();
+    }
+
+    /**
+     * Sacamos una lista de todas las expediciones registradas en el sistema.
+     */
+    public List<Expedicion> listarExpediciones () {
+        return new ArrayList<>(expediciones.values());
+    }
+
+    /**
+     * Consultamos el listado de participantes en una determinada expedición por el ID de la expedición.
+     */
+    public List<Expedicionario> participantesEnExpedicion (int idExpedicion) {
+        Expedicion expedicion = expediciones.get(idExpedicion);
+
+        return expedicion != null ? expedicion.getParticipantes() : new ArrayList<>();
+    }
+
 
 // CARGA DE DATOS A MODO DE BASE DE DATOS PARA REALIZAR PRUEBAS MÁS FACILMENTE
 

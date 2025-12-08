@@ -14,7 +14,7 @@ public class Expedicion {
     private LocalDate fechaFin;
     private Montaña montañaDestino;
     private List<Expedicionario> participantes;
-    private List<Alpinista> cimasLogradas;
+    private List<Expedicionario> cimasLogradas;
 
     public Expedicion(int id, String nombre, LocalDate fechaInicio, LocalDate fechaFin, Montaña montañaDestino) {
         this.id = id;
@@ -26,7 +26,6 @@ public class Expedicion {
         this.cimasLogradas = new ArrayList<>();
     }
 
-    // --- Metodos de acceso getters ---
     public int getId() {
         return id;
     }
@@ -51,13 +50,12 @@ public class Expedicion {
         return participantes;
     }
 
-    public List<Alpinista> getCimasLogradas() {
+    public List<Expedicionario> getCimasLogradas() {
         return cimasLogradas;
     }
 
     /**
      * Agrega un expedicionario a la lista de participantes
-     * @param expedicionario clase Expedicionario hay que crearlo.
      */
     public void agregarParticipante (Expedicionario expedicionario) {
         if (!participantes.contains(expedicionario)) {
@@ -67,29 +65,22 @@ public class Expedicion {
 
     /**
      * Elimina un expedicionario de la lista de participantes.
-     * @param dni dni por el que se busca al participante a eliminar.
-     * @return true o false si se elimina un elemento.
      */
     public boolean eliminarParticipante (String dni) {
         return participantes.removeIf(e -> e.getDni().equals(dni));
     }
 
-// ------------------------------------------ MODICIAR NO ME CONVENCE -------------------------------
-
     /**
      * Registra un alpinista que logró alcanzar la cima.
-      * @param alpinista Clase alpinista hay que crearlo.
      */
-    public void registrarCima (Alpinista alpinista) {
-        if (participantes.contains(alpinista) && !cimasLogradas.contains(alpinista)) {
-            cimasLogradas.add(alpinista);
+    public void registrarCima (Expedicionario expedicionario) {
+        if (participantes.stream().anyMatch(p -> p.getDni().equals(expedicionario.getDni())) && cimasLogradas.stream().noneMatch(a -> a.getDni().equals(expedicionario.getDni()))) {
+            cimasLogradas.add(expedicionario);
         }
     }
-// -----------------------------------------------------------------------
 
     /**
      * Verificación de la expedición tiene al menos un médico.
-     * @return verdadero o falso si la lista de participantes tiene al menos un medico en ella.
      */
     public boolean tieneMedico() {
         for (Expedicionario exp: participantes) {
@@ -102,10 +93,8 @@ public class Expedicion {
 
     /**
      * Consulta de las expediciones en las que participo un determinado expedicionario por su dni.
-     * @param dni metodo de identificación de un expedicionario.
-     * @return lista de expediciones realizadas por el expedicionario.
      */
-    public List<Expedicion> consultarExpediciones (String dni) {
+    public List<Expedicion> consultarExpedicionesDe (String dni) {
         List<Expedicion> expediciones = new ArrayList<>();
 
         for (Expedicionario exp : participantes) {
@@ -119,9 +108,8 @@ public class Expedicion {
 
     /**
      *  Lista de todos los alpinistas que tienen cimas logradas
-     * @return lista de cimas logradas por todos los alpinistas.
      */
-    public List<Alpinista> getAlpinistasConCima () {
+    public List<Expedicionario> getAlpinistasConCima () {
         return new ArrayList<>(cimasLogradas);
     }
 
