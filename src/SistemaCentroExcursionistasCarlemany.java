@@ -122,7 +122,7 @@ public class SistemaCentroExcursionistasCarlemany {
      * @param dni DNI identificativo del expedicionario
      * @return expedicionario encontrado o null
      */
-    public Expedicionario burcarExpedicionario (String dni) {
+    public Expedicionario buscarExpedicionario (String dni) {
         return expedicionarios.get(dni);
     }
 
@@ -185,12 +185,12 @@ public class SistemaCentroExcursionistasCarlemany {
     /**
      * Cramos una expedición para una montaña especifica dentro del catálogo si está disponible.
      */
-    public Expedicion crearExpedicion (String nombre, LocalDate fechaInicio, LocalDate fechaFin, int idMontaña) {
+    public Expedicion crearExpedicion (String nombre, LocalDate fechaInicio, LocalDate fechaFin, int idMontaña, String cimaAlcanzada) {
         Montaña montaña = montañas.get(idMontaña);
 
         if (montaña != null && catalogo.estaDisponible(idMontaña)) {
             int id = contadorExpediciones++;
-            Expedicion expedicion = new Expedicion(id, nombre, fechaInicio, fechaFin, montaña);
+            Expedicion expedicion = new Expedicion(id, nombre, fechaInicio, fechaFin, montaña, cimaAlcanzada);
             expediciones.put(id,expedicion);
             return expedicion;
         }
@@ -200,26 +200,20 @@ public class SistemaCentroExcursionistasCarlemany {
     /**
      * Añade un expedicionario a una expedición mediante el id de expedición y el dni de expedicionario.
      */
-    public void inscribirExpedicionario(int idExpedicion, String dniExpedicionario) {
+    public boolean inscribirExpedicionario(int idExpedicion, String dniExpedicionario) {
+
         Expedicion expedicion = expediciones.get(idExpedicion);
-        Expedicionario expedicionario = expedicionarios.get(dniExpedicionario);
-
-        if (expedicion != null && expedicionario != null) {
-            expedicion.agregarParticipante(expedicionario);
+        if (expedicion == null) {
+            throw new IllegalArgumentException("No existe ninguna expedición con ID: " + idExpedicion);
         }
-    }
 
-    /**
-     * Registra si un expedicionario llego a la cima en una expedición
-     * Tanto médicos como alpinistas pueden alcanzar la cima
-     */
-    public void registrarCima (int idExpedicion, String dniExpedicionario) {
-        Expedicion expedicion = expediciones.get(idExpedicion);
         Expedicionario expedicionario = expedicionarios.get(dniExpedicionario);
-
-        if (expedicion !=null && expedicionario != null) {
-            expedicion.registrarCima((Expedicionario) expedicionario);
+        if (expedicionario == null) {
+            throw new IllegalArgumentException("No existe ningún expedicionario con DNI: " + dniExpedicionario);
         }
+
+        expedicion.agregarParticipante(expedicionario);
+        return true;
     }
 
     /**
@@ -240,15 +234,6 @@ public class SistemaCentroExcursionistasCarlemany {
     }
 
     /**
-     * Consulta si se alcanzo la cima en una expedición por su ID
-     */
-    public boolean consultarCimaExpedicion (int idExpedicion) {
-        Expedicion expedicion = expediciones.get(idExpedicion);
-
-        return expedicion != null && expedicion.getCimasLogradas().isEmpty();
-    }
-
-    /**
      * Sacamos una lista de todas las expediciones registradas en el sistema.
      */
     public List<Expedicion> listarExpediciones () {
@@ -264,6 +249,12 @@ public class SistemaCentroExcursionistasCarlemany {
         return expedicion != null ? expedicion.getParticipantes() : new ArrayList<>();
     }
 
+    /**
+     * Borra la expedición por su ID
+     */
+    public void eliminarExpedicion (int id) {
+        expediciones.remove(id);
+    }
 
 // CARGA DE DATOS A MODO DE BASE DE DATOS PARA REALIZAR PRUEBAS MÁS FACILMENTE
 
@@ -316,6 +307,60 @@ public class SistemaCentroExcursionistasCarlemany {
 
         System.out.println("\n Creando expediciones");
 
-// --- FALTA PODER CREAR EXPEDICIONES Y AÑADIR PARTICIPANTES A ESTAS ---
+        Expedicion exp1 = crearExpedicion(
+                "Expedición Everest Primavera 2024",
+                LocalDate.of(2024, 4, 15),
+                LocalDate.of(2024, 5, 20),
+                everest.getId(),
+                "si"
+        );
+        if (exp1 != null) {
+            inscribirExpedicionario(exp1.getId(), alp1.getDni());
+            inscribirExpedicionario(exp1.getId(), alp2.getDni());
+            inscribirExpedicionario(exp1.getId(), alp3.getDni());
+            inscribirExpedicionario(exp1.getId(), med1.getDni());
+        }
+
+        Expedicion exp2 = crearExpedicion(
+                "Expedición K2 Verano 2024",
+                LocalDate.of(2024, 6, 1),
+                LocalDate.of(2024, 7, 15),
+                k2.getId(),
+                "no"
+        );
+        if (exp2 != null) {
+            inscribirExpedicionario(exp2.getId(), alp3.getDni());
+            inscribirExpedicionario(exp2.getId(), alp4.getDni());
+            inscribirExpedicionario(exp2.getId(), alp5.getDni());
+            inscribirExpedicionario(exp2.getId(), med2.getDni());
+        }
+
+        Expedicion exp3 = crearExpedicion(
+                "Expedición Mont Blanc Otoño 2024",
+                LocalDate.of(2024, 9, 10),
+                LocalDate.of(2024, 9, 25),
+                montblanc.getId(),
+                "si"
+        );
+
+        if (exp3 != null) {
+            inscribirExpedicionario(exp3.getId(), alp4.getDni());
+            inscribirExpedicionario(exp3.getId(), alp6.getDni());
+            inscribirExpedicionario(exp3.getId(), med3.getDni());
+        }
+
+        Expedicion exp4 = crearExpedicion(
+                "Expedición Aconcagua Verano 2025",
+                LocalDate.of(2025, 1, 5),
+                LocalDate.of(2025, 1, 25),
+                aconcagua.getId(),
+                "no"
+        );
+
+        if (exp4 != null) {
+            inscribirExpedicionario(exp4.getId(), alp1.getDni());
+            inscribirExpedicionario(exp4.getId(), alp5.getDni());
+            inscribirExpedicionario(exp4.getId(), med1.getDni());
+        }
     }
 }

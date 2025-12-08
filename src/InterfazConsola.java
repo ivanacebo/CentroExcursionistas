@@ -1,3 +1,5 @@
+import java.sql.SQLOutput;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
@@ -201,18 +203,20 @@ public class InterfazConsola {
             System.out.println("================================================================================");
             System.out.println("1. Crear nueva Expedición");
             System.out.println("2. Añadir participantes a Expedición");
-            System.out.println("3. Registrar cima alcanzada");
-            System.out.println("4. Listar todas las Expediciones");
+            System.out.println("3. Lista de las cimas alcanzadas por un participante por su DNI");
+            System.out.println("4. Lista de todas las Expediciones de un participante por su DNI");
+            System.out.println("5. Lista de todas las Expediciones");
             System.out.println("0. Volver al menú principal");
             System.out.println("================================================================================");
 
-            int opcion = leerOpcion(0, 4);
+            int opcion = leerOpcion(0, 5);
 
             switch (opcion) {
-                case 1: break;
-                case 2: break;
-                case 3: break;
-                case 4: break;
+                case 1: crearExpedicion(); break;
+                case 2: añadirParticipanteExpedicion(); break;
+                case 3: listarParticipantesExpedicion(); break;
+                case 4: listarExpediciones(); break;
+                case 5: listarExpediciones(); break;
                 case 0: volver = true; break;
                 default:
                     System.out.println("  Opción no válida");
@@ -227,18 +231,14 @@ public class InterfazConsola {
             System.out.println("================================================================================");
             System.out.println("                                   CONSULTAS                                    ");
             System.out.println("================================================================================");
-            System.out.println("1. Expediciones de un expedicionario por su id");
-            System.out.println("2. Verificar si se alcanzo la cima ");
-            System.out.println("3. Listar participantes de una Expedición por su id");
+            System.out.println("1. Listar participantes de una Expedición por su id");
             System.out.println("0. Volver al menú principal");
             System.out.println("================================================================================");
 
-            int opcion = leerOpcion(0, 3);
+            int opcion = leerOpcion(0, 1);
 
             switch (opcion) {
-                case 1: break;
-                case 2: break;
-                case 3: break;
+                case 1: listarParticipantesExpedicion(); break;
                 case 0: volver = true; break;
                 default:
                     System.out.println("  Opción no válida");
@@ -525,7 +525,7 @@ public class InterfazConsola {
 
         System.out.println("DNI: ");
         String dni = scanner.nextLine();
-        Expedicionario expedicionario = sistema.burcarExpedicionario(dni);
+        Expedicionario expedicionario = sistema.buscarExpedicionario(dni);
 
         if (expedicionario != null) {
             System.out.println("--- FICHA DE " + dni + " ---");
@@ -576,6 +576,181 @@ public class InterfazConsola {
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
+        pausar();
+    }
+
+// --- GESTIÓN DE EXPEDICIÓN ---
+
+    /**
+     * Crea una expedición pero para crearla tiene que inscribir a un medico y a un alpinista.
+     * Comprueba que la expedición exista en el sistema.
+     * Comprueba que el expedicionario exista en el sistema.
+     * Si se crea correctamente la expedición, se añade correctamente los dos expedicionarios necesarios se crea dicha expedición.
+     */
+    private void crearExpedicion() {
+        System.out.println("\n --- CREAR UNA NUEVA EXPEDICIÓN ---");
+
+        try{
+
+            System.out.println("Nombre: ");
+            String nombre = scanner.nextLine();
+            System.out.println("Fecha de inicio (dd/MM/yyyy): ");
+            LocalDate fechaInicio = LocalDate.parse(scanner.nextLine(), FORMATO_FECHA);
+            System.out.println("Fecha de fin (dd/MM/yyyy): ");
+            LocalDate fechaFin = LocalDate.parse(scanner.nextLine(), FORMATO_FECHA);
+            System.out.println("ID de la montaña: ");
+            int idMontaña = Integer.parseInt(scanner.nextLine());
+            System.out.println("¿Se alcanzo la cima? (si o no): ");
+            String cima = scanner.nextLine();
+
+            Expedicion expedicion = sistema.crearExpedicion(nombre, fechaInicio, fechaFin, idMontaña, cima);
+
+            if (expedicion == null) {
+                System.out.println("No se pudo crear la expedición. Verifica que la montaña exista y esté en catálogo.");
+                pausar();
+                return;
+            }
+
+            System.out.println("La expedición esta creandose...");
+            System.out.println("Ahora procedemos a añadir al menos: \n * Un Médico\n * Un Alpinista. ");
+
+            System.out.println("DNI del médico participante de la expedición: ");
+            String dniMedico = scanner.nextLine();
+
+            if ( !sistema.inscribirExpedicionario(expedicion.getId(), dniMedico)) {
+                System.out.println("Error: el participante NO es médico o no existe. La expedición será cancelada.");
+                sistema.eliminarExpedicion(expedicion.getId());
+                pausar();
+                return;
+            }
+
+            System.out.println("DNI del alpinista participante de la expedición:");
+            String dniAlpinista = scanner.nextLine();
+
+            if (!sistema.inscribirExpedicionario(expedicion.getId(), dniAlpinista)) {
+                System.out.println("Error: el participante NO es alpinista o no existe. La expedición será cancelada.");
+                sistema.eliminarExpedicion(expedicion.getId());
+                pausar();
+                return;
+            }
+
+            if (!expedicion.tieneMedico() || !expedicion.tieneAlpinista()) {
+                System.out.println("La expedición no cumple los requisitos mínimos (médico + alpinista). Se cancela.");
+                sistema.eliminarExpedicion(expedicion.getId());
+            } else {
+                System.out.println("Expedición creada CORRECTAMENTE con todos los requisitos.");
+                System.out.println(expedicion);
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        pausar();
+
+    }
+
+    /**
+     * Añade un expedicionario por DNI a una expedicion por ID.
+     */
+    private void añadirParticipanteExpedicion() {
+        System.out.println("\n  --- AÑADIR UN PARTICIPANTE A EXPEDICIÓN ---");
+
+        try {
+            System.out.println("ID de la expedición: ");
+            int id = Integer.parseInt(scanner.nextLine());
+            System.out.println("DNI del expedicionario: ");
+            String dni = scanner.nextLine();
+
+            sistema.inscribirExpedicionario(id, dni);
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+
+        pausar();
+    }
+
+    /**
+     * Nos documenta la lista de montañas donde el expedicionario si ha llegado a la cima por su DNI
+     */
+    private void listarCimasParticipante() {
+        System.out.println("\n --- LISTA DE EXPEDICIONES DONDE EL EXPEDICIONARIO HA ALCANZADO LA CIMA ---");
+
+        System.out.println("DNI del expedicionario: ");
+        String dni = scanner.nextLine();
+
+        List<Expedicion> expediciones = sistema.listaExpedicionesDe(dni);
+
+        if (expediciones.isEmpty()) {
+            System.out.println("Este expedicionario no ha partidicapdo en ninguna expedición.");
+        } else {
+            for (Expedicion e :expediciones) {
+                if (!e.getCimaAlcanzada().equalsIgnoreCase("no")) {
+                    System.out.println(" * Cima alcanzada: " + e.getCimaAlcanzada());
+                    System.out.println("   Montaña: " + e.getMontañaDestino().getNombre());
+                }
+            }
+        }
+    }
+
+    /**
+     * Lista de las expediciones realizadas por un determinado expedicionario en relación al DNI de este.
+     */
+    private void listarExpedicionesDeParticipante () {
+        System.out.println("\n --- LISTA DE EXPEDICIONES DE UN PARTICIPANTE ---");
+
+        System.out.println("DNI del expedicionario: ");
+        String dni = scanner.nextLine();
+
+        List<Expedicion> listaExpediciones = sistema.listaExpedicionesDe(dni);
+
+        if (listaExpediciones.isEmpty()) {
+            System.out.println("El expedicionario seleccionado no tiene expediciones asociadas.");
+        } else {
+            for (Expedicion e : listaExpediciones) {
+                System.out.println(" * " + e);
+            }
+        }
+
+        pausar();
+    }
+
+    /**
+     * Lista de todas las expediciones registradas que tiene el sistema.
+     */
+    private void listarExpediciones () {
+        System.out.println("\n --- LISTA DE TODAS LAS EXPEDICIONES RELIZADAS EN EL CENTRO ---");
+
+        List<Expedicion> listaExpediciones = sistema.listarExpediciones();
+
+        if (listaExpediciones.isEmpty()) {
+            System.out.println("No tenemos expediciones registradas en nuestro centro");
+        } else {
+            for (Expedicion e : listaExpediciones)
+                System.out.println(" * " + e);
+        }
+
+        pausar();
+
+    }
+// --- CONSULTAS ---
+    /**
+     * Busca la lista de expedicionarios de una expedición por el ID de esta.
+     */
+    private void listarParticipantesExpedicion() {
+        System.out.println("\n --- PARTICIPANTES DE LA EXPEDICIÓN ---");
+
+        System.out.println("Id de la expedición: ");
+        int id = Integer.parseInt(scanner.nextLine());
+
+        List<Expedicionario> listaExpedicionarios = sistema.participantesEnExpedicion(id);
+
+        if (listaExpedicionarios.isEmpty()) {
+            System.out.println("No hay participantes o la expedición no existe");
+        } else {
+            listaExpedicionarios.forEach(System.out::println);
+        }
+
         pausar();
     }
 

@@ -13,17 +13,17 @@ public class Expedicion {
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
     private Montaña montañaDestino;
+    private String cimaAlcanzada;
     private List<Expedicionario> participantes;
-    private List<Expedicionario> cimasLogradas;
 
-    public Expedicion(int id, String nombre, LocalDate fechaInicio, LocalDate fechaFin, Montaña montañaDestino) {
+    public Expedicion(int id, String nombre, LocalDate fechaInicio, LocalDate fechaFin, Montaña montañaDestino, String cimaAlcanzada) {
         this.id = id;
         this.nombre = nombre;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
         this.montañaDestino = montañaDestino;
+        this.cimaAlcanzada = cimaAlcanzada;
         this.participantes = new ArrayList<>();
-        this.cimasLogradas = new ArrayList<>();
     }
 
     public int getId() {
@@ -46,13 +46,13 @@ public class Expedicion {
         return montañaDestino;
     }
 
+    public String getCimaAlcanzada() {return cimaAlcanzada; }
+
     public List<Expedicionario> getParticipantes() {
         return participantes;
     }
 
-    public List<Expedicionario> getCimasLogradas() {
-        return cimasLogradas;
-    }
+    public void setCimaAlcanzada(String cimaAlcanzada) {this.cimaAlcanzada = cimaAlcanzada; }
 
     /**
      * Agrega un expedicionario a la lista de participantes
@@ -71,15 +71,6 @@ public class Expedicion {
     }
 
     /**
-     * Registra un alpinista que logró alcanzar la cima.
-     */
-    public void registrarCima (Expedicionario expedicionario) {
-        if (participantes.stream().anyMatch(p -> p.getDni().equals(expedicionario.getDni())) && cimasLogradas.stream().noneMatch(a -> a.getDni().equals(expedicionario.getDni()))) {
-            cimasLogradas.add(expedicionario);
-        }
-    }
-
-    /**
      * Verificación de la expedición tiene al menos un médico.
      */
     public boolean tieneMedico() {
@@ -92,25 +83,15 @@ public class Expedicion {
     }
 
     /**
-     * Consulta de las expediciones en las que participo un determinado expedicionario por su dni.
+     * Verificación de la expedición tiene al menos un alpinista.
      */
-    public List<Expedicion> consultarExpedicionesDe (String dni) {
-        List<Expedicion> expediciones = new ArrayList<>();
-
-        for (Expedicionario exp : participantes) {
-            if(exp.getDni().equals(dni)) {
-                expediciones.add(this);
-                break;
+    public boolean tieneAlpinista() {
+        for (Expedicionario e: participantes) {
+            if (e instanceof  Alpinista) {
+                return true;
             }
         }
-        return expediciones;
-    }
-
-    /**
-     *  Lista de todos los alpinistas que tienen cimas logradas
-     */
-    public List<Expedicionario> getAlpinistasConCima () {
-        return new ArrayList<>(cimasLogradas);
+        return false;
     }
 
     @Override
@@ -123,6 +104,6 @@ public class Expedicion {
                 ", Fin=" + fechaFin.format(formatter) +
                 ", Destino=" + montañaDestino.getNombre() +
                 ", Participantes=" + participantes.size() +
-                ", Cimas=" + cimasLogradas.size() + "]";
+                ", Hicieron cima= " + cimaAlcanzada + "]";
     }
 }
