@@ -1,4 +1,3 @@
-import java.sql.SQLOutput; // esto lo podemos quitar no?
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
@@ -148,7 +147,7 @@ public class InterfazConsola {
             System.out.println("0. Volver al menú principal");
             System.out.println("================================================================================");
 
-            int opcion = leerOpcion(0, 4);
+            int opcion = leerOpcion(0, 3);
 
             switch (opcion) {
                 case 1: agregarMontañaCatalogo(); break;
