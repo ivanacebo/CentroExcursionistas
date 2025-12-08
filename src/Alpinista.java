@@ -5,12 +5,12 @@
  */
 public class Alpinista extends Expedicionario{
 
-    public Alpinista(String dni, String nombre, int edad, String telefono, String rol) {
-        super(dni, nombre, edad, telefono, rol);
+    public Alpinista(String dni, String nombre, int edad, String telefono) {
+        super(dni, nombre, edad, telefono, "Alpinista");
     }
 
     @Override
     public String toString() {
-        return "Alpinista [DNI=" + getDni() + ", Nombre=" + getNombre() + ", Edad=" + getEdad() + ", Teléfono=" + getTelefono() + ", Rol=" + getRol() + "]";
+        return "Alpinista [DNI=" + getDni() + ", Nombre=" + getNombre() + ", Edad=" + getEdad() + ", Teléfono=" + getTelefono() + "]";
     }
 }

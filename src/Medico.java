@@ -8,8 +8,8 @@ public class Medico extends Expedicionario{
     private String licencia;
     private String especialidad;
 
-    public Medico(String dni, String nombre, int edad, String telefono, String rol, String licencia, String especialidad) {
-        super(dni, nombre, edad, telefono, rol);
+    public Medico(String dni, String nombre, int edad, String telefono, String licencia, String especialidad) {
+        super(dni, nombre, edad, telefono, "Médico");
         this.licencia = licencia;
         this.especialidad = especialidad;
     }
@@ -35,6 +35,6 @@ public class Medico extends Expedicionario{
     @Override
     public String toString() {
         return "Médico [DNI=" + getDni() + ", Nombre=" + getNombre() + ", Edad=" + getEdad() +
-                ", Teléfono=" + getTelefono() + ", Licencia=" + licencia + ", Especialidad=" + especialidad + ", Rol=" + getRol() + "]";
+                ", Teléfono=" + getTelefono() + ", Licencia=" + licencia + ", Especialidad=" + especialidad + "]";
     }
 }

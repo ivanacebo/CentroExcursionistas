@@ -145,7 +145,6 @@ public class InterfazConsola {
             System.out.println("1. Añadir Montaña al Catálogo por id");
             System.out.println("2. Quitar Montaña del Catálogo por id");
             System.out.println("3. Listar Montañas Disponibles");
-            System.out.println("4. Ver Alpinistas con cima en Montaña");
             System.out.println("0. Volver al menú principal");
             System.out.println("================================================================================");
 
@@ -155,7 +154,6 @@ public class InterfazConsola {
                 case 1: agregarMontañaCatalogo(); break;
                 case 2: quitarMontañaCatalogo(); break;
                 case 3: listarMontañasCatalogo(); break;
-                case 4: break;
                 case 0: volver = true; break;
                 default:
                     System.out.println("  Opción no válida");
@@ -172,18 +170,22 @@ public class InterfazConsola {
             System.out.println("================================================================================");
             System.out.println("1. Registrar nuevo Alpinista");
             System.out.println("2. Registrar nuevo Médico");
-            System.out.println("3. Listar todos los Expedicionarios del sistema");
-            System.out.println("4. Consultar ficha de Expedicionario por id");
+            System.out.println("3. Borrar Expedicionaro por su DNI");
+            System.out.println("4. Listar todos los Expedicionarios del sistema");
+            System.out.println("5. Consultar ficha de Expedicionario por DNI");
+            System.out.println("6. Modificación del Expedicionaro por su DNI");
             System.out.println("0. Volver al menú principal");
             System.out.println("================================================================================");
 
-            int opcion = leerOpcion(0, 4);
+            int opcion = leerOpcion(0, 6);
 
             switch (opcion) {
-                case 1: break;
-                case 2: break;
-                case 3: break;
-                case 4: break;
+                case 1: registrarAlpinista(); break;
+                case 2: registrarMedico(); break;
+                case 3: borrarExpedicionario(); break;
+                case 4: listarExpedicionarios(); break;
+                case 5: buscarExpedicionario(); break;
+                case 6: modificarExpedicionario(); break;
                 case 0: volver = true; break;
                 default:
                     System.out.println("  Opción no válida");
@@ -290,11 +292,10 @@ public class InterfazConsola {
             } else {
                 System.out.println("No se encontro ninguna montaña con el ID: " + id);
             }
-            pausar();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
-            pausar();
         }
+        pausar();
     }
 
     /**
@@ -325,12 +326,11 @@ public class InterfazConsola {
 
             sistema.actualizarMontaña(id, nombre, altura, localizacion);
             System.out.println("Montaña actualizada con exito");
-            pausar();
 
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
-            pausar();
         }
+        pausar();
     }
 
     /**
@@ -372,12 +372,11 @@ public class InterfazConsola {
             } else {
                 System.out.println("No se pudo agregar la montaña porque o bien no exista o bien esta añadida ya");
             }
-            pausar();
 
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
-            pausar();
         }
+        pausar();
     }
 
     /**
@@ -398,11 +397,10 @@ public class InterfazConsola {
             } else {
                 System.out.println("No existe ninguna montaña con ese ID dentro del catálogo.");
             }
-            pausar();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
-            pausar();
         }
+        pausar();
     }
 
     /**
@@ -419,6 +417,165 @@ public class InterfazConsola {
             for (Montaña m : lista) {
                 System.out.println(" * " + m);
             }
+        }
+        pausar();
+    }
+
+// --- GESTIÓN DE EXPEDICIONARIO (ALPINISTA O MÉDICO) ---
+
+    /**
+     * Registro de ALpinista en el sistema
+     */
+    private void registrarAlpinista() {
+        System.out.println("\n --- REGISTRAR ALPINISTA ---");
+
+        try {
+            System.out.println("DNI: ");
+            String dni = scanner.nextLine();
+            System.out.println("Nombre: ");
+            String nombre = scanner.nextLine();
+            System.out.println("Edad: ");
+            int edad = Integer.parseInt(scanner.nextLine());
+            System.out.println("Teléfono: ");
+            String telefono = scanner.nextLine();
+
+            Alpinista alpinista = new Alpinista(dni, nombre, edad, telefono);
+            sistema.registrarExpedicionario(alpinista);
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        pausar();
+    }
+
+    /**
+     * Registro de médico en el sistema
+     */
+    private void registrarMedico() {
+        System.out.println("\n --- REGISTRAR ALPINISTA ---");
+
+        try {
+            System.out.println("DNI: ");
+            String dni = scanner.nextLine();
+            System.out.println("Nombre: ");
+            String nombre = scanner.nextLine();
+            System.out.println("Edad: ");
+            int edad = Integer.parseInt(scanner.nextLine());
+            System.out.println("Teléfono: ");
+            String telefono = scanner.nextLine();
+            System.out.println("Número de licencia: ");
+            String licencia = scanner.nextLine();
+            System.out.println("Especialidad: ");
+            String especialidad = scanner.nextLine();
+
+            Medico medico = new Medico(dni, nombre, edad, telefono, licencia, especialidad);
+            sistema.registrarExpedicionario(medico);
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        pausar();
+    }
+
+    /**
+     * Borrar expedicionario por su DNI
+     */
+    private void borrarExpedicionario() {
+        System.out.println("\n --- BORRAR EXPEDICIONARIO ---");
+
+        try {
+            System.out.println("DNI: ");
+            String dni = scanner.nextLine();
+
+            Expedicionario expedicionarioEliminado = sistema.borrarExpedicionario(dni);
+
+            if (expedicionarioEliminado != null) {
+                System.out.println("El expedicionario ha sido eliminado.");
+            } else {
+                System.out.println("No existe ningún expedicionario con el DNI " + dni);
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        pausar();
+    }
+
+    /**
+     * Listar todos los expedicionarios del sistema o mensaje de que no tenemos ninguno.
+     */
+    public void listarExpedicionarios() {
+        System.out.println("\n --- LISTA DE EXPEDICIONARIOS ---");
+        List<Expedicionario> expedicionarios = sistema.listarExpedicionarios();
+
+        if (expedicionarios.isEmpty()) {
+            System.out.println("No hay expedicionarios registrados");
+        } else {
+            for (Expedicionario e : expedicionarios) {
+                System.out.println(" * " + e);
+            }
+        }
+        pausar();
+    }
+
+    /**
+     * Busqueda expedicionario por DNI
+     */
+    public void buscarExpedicionario() {
+        System.out.println("\n --- FICHA DEL EXPEDICIONARIO ---");
+
+        System.out.println("DNI: ");
+        String dni = scanner.nextLine();
+        Expedicionario expedicionario = sistema.burcarExpedicionario(dni);
+
+        if (expedicionario != null) {
+            System.out.println("--- FICHA DE " + dni + " ---");
+            System.out.println(expedicionario);
+        } else {
+            System.out.println("No se encontró un expedicionario con el DNI " + dni);
+        }
+        pausar();
+    }
+
+    /**
+     * Modificar espedicionario en concreto Médico o Alpinista
+     */
+    private void modificarExpedicionario () {
+        System.out.println("\n --- MODIFICAR EXPEDICIONARIO ---");
+
+        try {
+            System.out.println("DNI: ");
+            String dni = scanner.nextLine();
+
+            Expedicionario expedicionarioModificar = sistema.consultarExpedicionario(dni);
+
+            if(expedicionarioModificar == null) {
+                System.out.println("No existe Expedicionario con el DNI " + dni);
+                pausar();
+                return;
+            }
+
+            System.out.println("Nombre: ");
+            String nombre = scanner.nextLine();
+            System.out.println("Edad: ");
+            int edad = Integer.parseInt(scanner.nextLine());
+            System.out.println("Teléfono: ");
+            String telefono = scanner.nextLine();
+
+            if (expedicionarioModificar instanceof Medico) {
+                System.out.println("Número de licencia: ");
+                String licencia = scanner.nextLine();
+                System.out.println("Especialidad: ");
+                String especialidad = scanner.nextLine();
+
+                sistema.modificarMedico(dni, nombre,edad, telefono, licencia, especialidad);
+            } else {
+                sistema.modificarAlpinista(dni, nombre, edad, telefono);
+            }
+
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
         }
         pausar();
     }
