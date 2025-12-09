@@ -145,7 +145,7 @@ public class InterfazConsola {
             System.out.println("================================================================================");
             System.out.println("1. Añadir Montaña al Catálogo por id");
             System.out.println("2. Quitar Montaña del Catálogo por id");
-            System.out.println("3. Listar Montañas Disponibles");
+            System.out.println("3. Lista de Montañas Disponibles");
             System.out.println("0. Volver al menú principal");
             System.out.println("================================================================================");
 
@@ -172,7 +172,7 @@ public class InterfazConsola {
             System.out.println("1. Registrar nuevo Alpinista");
             System.out.println("2. Registrar nuevo Médico");
             System.out.println("3. Borrar Expedicionaro por su DNI");
-            System.out.println("4. Listar todos los Expedicionarios del sistema");
+            System.out.println("4. Lista de todos los Expedicionarios del sistema");
             System.out.println("5. Consultar ficha de Expedicionario por DNI");
             System.out.println("6. Modificación del Expedicionaro por su DNI");
             System.out.println("0. Volver al menú principal");
@@ -214,8 +214,8 @@ public class InterfazConsola {
             switch (opcion) {
                 case 1: crearExpedicion(); break;
                 case 2: añadirParticipanteExpedicion(); break;
-                case 3: listarParticipantesExpedicion(); break;
-                case 4: listarExpediciones(); break;
+                case 3: listarCimasParticipante(); break;
+                case 4: listarExpedicionesDeParticipante(); break;
                 case 5: listarExpediciones(); break;
                 case 0: volver = true; break;
                 default:
@@ -231,7 +231,7 @@ public class InterfazConsola {
             System.out.println("================================================================================");
             System.out.println("                                   CONSULTAS                                    ");
             System.out.println("================================================================================");
-            System.out.println("1. Listar participantes de una Expedición por su id");
+            System.out.println("1. Lista de participantes de una Expedición por su id");
             System.out.println("0. Volver al menú principal");
             System.out.println("================================================================================");
 
