@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class InterfazConsola {
 
     // Autenticación
-    private static final String PASSWORD = "carlemany2025";
+    private static final String PASSWORD = "carlemany";
     private static final int MAX_INTENTOS_LOGIN = 3;
 
     // Formato de fechas
